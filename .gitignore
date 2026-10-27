@@ -1,0 +1,55 @@
+# dependencies
+node_modules/
+
+# pnpm
+pnpm-lock.yaml
+
+# Next.js (web app)
+apps/web/.next/
+apps/web/next-env.d.ts
+apps/web/tsconfig.tsbuildinfo
+
+# Expo (mobile app)
+apps/mobile/.expo/
+apps/mobile/dist/
+apps/mobile/web-build/
+apps/mobile/expo-env.d.ts
+apps/mobile/tsconfig.tsbuildinfo
+
+# Native (mobile)
+apps/mobile/.kotlin/
+apps/mobile/*.orig.*
+apps/mobile/*.jks
+apps/mobile/*.p8
+apps/mobile/*.p12
+apps/mobile/*.key
+apps/mobile/*.mobileprovision
+apps/mobile/ios/
+apps/mobile/android/
+
+# Metro
+apps/mobile/.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db

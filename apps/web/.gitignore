@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+
+# Next.js
+.next/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# build
+out/
+build/
+
+# pnpm
+pnpm-lock.yaml
+
+# testing
+coverage/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# local env files
+.env*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Turbo
+.turbo/

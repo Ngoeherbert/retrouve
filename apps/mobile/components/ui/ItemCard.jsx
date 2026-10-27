@@ -1,0 +1,63 @@
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import StatusBadge from './StatusBadge';
+import { colors, radius, spacing, shadows } from '../../constants/theme';
+
+export default function ItemCard({ item, onPress }) {
+  const isLost = item.status === 'lost';
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
+      {item.image ? (
+        <Image source={{ uri: item.image }} style={styles.image} />
+      ) : (
+        <View style={[styles.image, styles.imagePlaceholder]}>
+          <Text style={styles.placeholderText}>No photo</Text>
+        </View>
+      )}
+
+      <View style={styles.content}>
+        <StatusBadge status={item.status} />
+
+        <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+
+        {!!item.location && (
+          <Text style={styles.location} numberOfLines={1}>
+            {item.location}
+          </Text>
+        )}
+
+        {!!item.date && (
+          <Text style={styles.date}>{item.date}</Text>
+        )}
+
+        <Text style={[styles.action, { color: isLost ? colors.danger : colors.success }]}>
+          {isLost ? 'Help find this item' : 'Could this be yours?'}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+    ...shadows.card,
+  },
+  image: { width: '100%', height: 150, backgroundColor: colors.surfaceSecondary },
+  imagePlaceholder: { alignItems: 'center', justifyContent: 'center' },
+  placeholderText: { color: colors.textMuted, fontSize: 13 },
+  content: { padding: spacing.md, gap: spacing.sm },
+  title: { color: colors.text, fontSize: 17, fontWeight: '700' },
+  location: { color: colors.textSecondary, fontSize: 13 },
+  date: { color: colors.textMuted, fontSize: 12 },
+  action: { fontSize: 13, fontWeight: '700', marginTop: 2 },
+  pressed: { opacity: 0.85 },
+});
