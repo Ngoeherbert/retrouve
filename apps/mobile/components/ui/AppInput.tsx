@@ -1,6 +1,22 @@
-import { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { colors, radius, spacing } from '../../constants/theme';
+import { useState } from "react";
+import type { ReactNode } from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
+import type {
+  TextInputProps,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from "react-native";
+import { colors, radius, spacing } from "../../constants/theme";
+
+interface AppInputProps extends TextInputProps {
+  label?: string;
+  error?: string;
+  left?: ReactNode;
+  right?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
+}
 
 export default function AppInput({
   label,
@@ -8,9 +24,22 @@ export default function AppInput({
   left,
   right,
   style,
+  inputStyle,
+  onFocus,
+  onBlur,
   ...props
-}) {
+}: AppInputProps) {
   const [focused, setFocused] = useState(false);
+
+  const handleFocus: NonNullable<TextInputProps["onFocus"]> = (event) => {
+    setFocused(true);
+    onFocus?.(event);
+  };
+
+  const handleBlur: NonNullable<TextInputProps["onBlur"]> = (event) => {
+    setFocused(false);
+    onBlur?.(event);
+  };
 
   return (
     <View style={[styles.wrapper, style]}>
@@ -27,15 +56,9 @@ export default function AppInput({
         <TextInput
           {...props}
           placeholderTextColor={colors.textMuted}
-          onFocus={(event) => {
-            setFocused(true);
-            props.onFocus?.(event);
-          }}
-          onBlur={(event) => {
-            setFocused(false);
-            props.onBlur?.(event);
-          }}
-          style={[styles.input, props.inputStyle]}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          style={[styles.input, inputStyle]}
         />
         {right}
       </View>
@@ -47,11 +70,11 @@ export default function AppInput({
 
 const styles = StyleSheet.create({
   wrapper: { gap: spacing.sm },
-  label: { fontSize: 14, fontWeight: '600', color: colors.text },
+  label: { fontSize: 14, fontWeight: "600", color: colors.text },
   inputContainer: {
     minHeight: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     paddingHorizontal: spacing.md,
     backgroundColor: colors.surface,

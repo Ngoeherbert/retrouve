@@ -1,8 +1,14 @@
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import type { Item } from '../../types/item';
 import StatusBadge from './StatusBadge';
 import { colors, radius, spacing, shadows } from '../../constants/theme';
 
-export default function ItemCard({ item, onPress }) {
+interface ItemCardProps {
+  item: Item;
+  onPress: () => void;
+}
+
+export default function ItemCard({ item, onPress }: ItemCardProps) {
   const isLost = item.status === 'lost';
 
   return (
@@ -22,7 +28,9 @@ export default function ItemCard({ item, onPress }) {
       <View style={styles.content}>
         <StatusBadge status={item.status} />
 
-        <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+        <Text style={styles.title} numberOfLines={2}>
+          {item.title}
+        </Text>
 
         {!!item.location && (
           <Text style={styles.location} numberOfLines={1}>
@@ -30,11 +38,14 @@ export default function ItemCard({ item, onPress }) {
           </Text>
         )}
 
-        {!!item.date && (
-          <Text style={styles.date}>{item.date}</Text>
-        )}
+        {!!item.date && <Text style={styles.date}>{item.date}</Text>}
 
-        <Text style={[styles.action, { color: isLost ? colors.danger : colors.success }]}>
+        <Text
+          style={[
+            styles.action,
+            { color: isLost ? colors.danger : colors.success },
+          ]}
+        >
           {isLost ? 'Help find this item' : 'Could this be yours?'}
         </Text>
       </View>
@@ -51,7 +62,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...shadows.card,
   },
-  image: { width: '100%', height: 150, backgroundColor: colors.surfaceSecondary },
+  image: {
+    width: '100%',
+    height: 150,
+    backgroundColor: colors.surfaceSecondary,
+  },
   imagePlaceholder: { alignItems: 'center', justifyContent: 'center' },
   placeholderText: { color: colors.textMuted, fontSize: 13 },
   content: { padding: spacing.md, gap: spacing.sm },

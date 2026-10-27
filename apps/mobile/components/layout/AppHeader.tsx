@@ -1,14 +1,20 @@
 import { View, Text, StyleSheet } from 'react-native';
+import type { ReactNode } from 'react';
 import { colors, spacing } from '../../constants/theme';
 
-export default function AppHeader({ title, subtitle, right }) {
+interface AppHeaderProps {
+  title: string;
+  subtitle?: string;
+  right?: ReactNode;
+}
+
+export default function AppHeader({ title, subtitle, right }: AppHeaderProps) {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
-
       {right}
     </View>
   );

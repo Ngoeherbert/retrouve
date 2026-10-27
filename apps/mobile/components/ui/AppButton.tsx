@@ -1,5 +1,22 @@
-import { ActivityIndicator, Pressable, Text, StyleSheet } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  Text,
+  StyleSheet,
+} from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { colors, radius, spacing } from '../../constants/theme';
+
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+
+interface AppButtonProps {
+  title: string;
+  onPress: () => void;
+  variant?: ButtonVariant;
+  disabled?: boolean;
+  loading?: boolean;
+  style?: StyleProp<ViewStyle>;
+}
 
 export default function AppButton({
   title,
@@ -8,7 +25,7 @@ export default function AppButton({
   disabled = false,
   loading = false,
   style,
-}) {
+}: AppButtonProps) {
   const secondary = variant === 'secondary';
   const ghost = variant === 'ghost';
   const danger = variant === 'danger';
@@ -29,7 +46,9 @@ export default function AppButton({
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={secondary || ghost ? colors.primary : '#FFFFFF'} />
+        <ActivityIndicator
+          color={secondary || ghost ? colors.primary : '#FFFFFF'}
+        />
       ) : (
         <Text
           style={[
@@ -53,28 +72,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  secondary: {
-    backgroundColor: colors.primarySoft,
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-  danger: {
-    backgroundColor: colors.danger,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.82,
-    transform: [{ scale: 0.99 }],
-  },
-  label: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  secondaryLabel: {
-    color: colors.primary,
-  },
+  secondary: { backgroundColor: colors.primarySoft },
+  ghost: { backgroundColor: 'transparent' },
+  danger: { backgroundColor: colors.danger },
+  disabled: { opacity: 0.5 },
+  pressed: { opacity: 0.82, transform: [{ scale: 0.99 }] },
+  label: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  secondaryLabel: { color: colors.primary },
 });
