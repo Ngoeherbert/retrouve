@@ -13,27 +13,16 @@ import { useRouter } from "expo-router";
 import { colors, spacing, typography } from "../../../constants/theme";
 import { AppIcon, type AppIconName } from "../../../components/ui/AppIcons";
 
-// Swap these for your own icon names (bell, search, camera, qr, sparkles, gift, pin, sliders) if you have them.
+// Swap these for your own icon names (bell, search, camera, qr, sparkles, gift, pin, sliders, calendar, clock) if you have them.
 const ICONS = {
   bell: "notifications",
   search: "explore",
   filter: "settingsAlt",
   gift: "trophy",
   pin: "explore",
+  calendar: "package", // TODO: replace with a calendar icon
+  clock: "check", // TODO: replace with a clock icon
 } satisfies Record<string, AppIconName>;
-
-const quickActions: {
-  id: string;
-  label: string;
-  icon: AppIconName;
-  dark?: boolean;
-}[] = [
-  { id: "lost", label: "Report Lost", icon: "explore", dark: true },
-  { id: "found", label: "Report Found", icon: "checkSolid" },
-  { id: "qr", label: "QR Tags", icon: "searchAdd" },
-  { id: "status", label: "Status Update", icon: "check" },
-  { id: "ai", label: "AI Match", icon: "heart" },
-];
 
 const nearbyItems = [
   { id: "1", name: "AirPods Pro", place: "Central Park", distance: "0.4 Mi" },
@@ -47,6 +36,77 @@ const nearbyItems = [
 ];
 
 const categories = ["Popular", "Electronics", "Wallets", "Keys", "Bags"];
+
+type TrendingItem = {
+  id: string;
+  finderId: string;
+  category: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  finderName: string;
+  finderInfo: string;
+  popular?: boolean;
+};
+
+const trendingItems: TrendingItem[] = [
+  {
+    id: "t1",
+    finderId: "finder-meenal",
+    category: "Bags",
+    title: "Duffle Bag",
+    description:
+      "Brown colored duffle bag found at the ground. Message me if you are the owner.",
+    date: "05 Spt",
+    time: "07:55 PM",
+    location: "College ground",
+    finderName: "Meenal Parekh",
+    finderInfo: "Btech I.T 2nd year",
+    popular: true,
+  },
+  {
+    id: "t2",
+    finderId: "finder-daniel",
+    category: "Electronics",
+    title: "AirPods Pro",
+    description:
+      "White AirPods Pro case found near the fountain. Describe the engraving to claim it.",
+    date: "12 Oct",
+    time: "10:20 AM",
+    location: "Central Park",
+    finderName: "Daniel Reyes",
+    finderInfo: "Visitor",
+    popular: true,
+  },
+  {
+    id: "t3",
+    finderId: "finder-priya",
+    category: "Wallets",
+    title: "Black Wallet",
+    description:
+      "Black leather wallet with a few cards inside. Please verify the name on the cards.",
+    date: "20 Oct",
+    time: "04:10 PM",
+    location: "Brooklyn Bridge Park",
+    finderName: "Priya Nair",
+    finderInfo: "Local resident",
+  },
+  {
+    id: "t4",
+    finderId: "finder-tom",
+    category: "Keys",
+    title: "Car Keys",
+    description:
+      "Set of three keys on a blue keychain, found on a bench by the entrance.",
+    date: "24 Oct",
+    time: "08:45 AM",
+    location: "Union Square",
+    finderName: "Tom Becker",
+    finderInfo: "Security staff",
+  },
+];
 
 const shadows = {
   card: {
@@ -66,10 +126,93 @@ const radius = {
   full: 999,
 };
 
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function TrendingCard({
+  item,
+  onChat,
+}: {
+  item: TrendingItem;
+  onChat: () => void;
+}) {
+  return (
+    <View style={styles.trendCard}>
+      <View style={styles.trendBody}>
+        <View style={styles.trendTop}>
+          {/* Replace with <Image source={{ uri: item.imageUrl }} style={styles.trendImage} /> */}
+          <View style={styles.trendImage}>
+            <AppIcon name="package" size={32} color={colors.textMuted} />
+          </View>
+          <View style={styles.trendInfo}>
+            <Text style={styles.trendTitle} numberOfLines={1}>
+              {item.title}
+            </Text>
+            <Text style={styles.trendDescription} numberOfLines={3}>
+              {item.description}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.trendMetaRow}>
+          <View style={styles.trendMeta}>
+            <AppIcon name={ICONS.calendar} size={13} color={colors.textMuted} />
+            <Text style={styles.trendMetaText}>{item.date}</Text>
+          </View>
+          <View style={styles.trendMeta}>
+            <AppIcon name={ICONS.clock} size={13} color={colors.textMuted} />
+            <Text style={styles.trendMetaText}>{item.time}</Text>
+          </View>
+          <View style={[styles.trendMeta, styles.trendMetaLocation]}>
+            <AppIcon name={ICONS.pin} size={13} color={colors.textMuted} />
+            <Text style={styles.trendMetaText} numberOfLines={1}>
+              {item.location}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.finderRow}>
+        <View style={styles.finderAvatar}>
+          <Text style={styles.finderAvatarText}>
+            {initials(item.finderName)}
+          </Text>
+        </View>
+        <View style={styles.finderText}>
+          <Text style={styles.finderName} numberOfLines={1}>
+            {item.finderName}
+          </Text>
+          <Text style={styles.finderInfo} numberOfLines={1}>
+            {item.finderInfo}
+          </Text>
+        </View>
+        <Pressable
+          style={styles.chatButton}
+          onPress={onChat}
+          accessibilityRole="button"
+          accessibilityLabel={`Chat with ${item.finderName}`}
+        >
+          <Text style={styles.chatButtonText}>Chat</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Popular");
+
+  const visibleTrending = trendingItems.filter((item) =>
+    category === "Popular" ? item.popular : item.category === category,
+  );
 
   return (
     <SafeAreaProvider>
@@ -122,37 +265,10 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Quick actions */}
-          <View style={styles.actionRow}>
-            {quickActions.map((action) => (
-              <Pressable
-                key={action.id}
-                style={styles.actionItem}
-                onPress={() => {}}
-                accessibilityRole="button"
-                accessibilityLabel={action.label}
-              >
-                <View
-                  style={[
-                    styles.actionTile,
-                    action.dark && styles.actionTileDark,
-                  ]}
-                >
-                  <AppIcon
-                    name={action.icon}
-                    size={22}
-                    color={action.dark ? colors.primary : colors.text}
-                  />
-                </View>
-                <Text style={styles.actionLabel} numberOfLines={1}>
-                  {action.label}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-
           {/* Rewards banner */}
           <View style={styles.banner}>
+            <View style={styles.bannerGlowLarge} pointerEvents="none" />
+            <View style={styles.bannerGlowSmall} pointerEvents="none" />
             <View style={styles.bannerText}>
               <View style={styles.bannerPill}>
                 <Text style={styles.bannerPillText}>Rewards</Text>
@@ -165,7 +281,7 @@ export default function HomeScreen() {
               </Text>
             </View>
             <View style={styles.bannerGift}>
-              <AppIcon name={ICONS.gift} size={26} color={colors.text} />
+              <AppIcon name={ICONS.gift} size={30} color={colors.text} />
             </View>
           </View>
 
@@ -260,6 +376,29 @@ export default function HomeScreen() {
                 );
               })}
             </ScrollView>
+
+            {visibleTrending.length > 0 ? (
+              <View style={styles.trendList}>
+                {visibleTrending.map((item) => (
+                  <TrendingCard
+                    key={item.id}
+                    item={item}
+                    onChat={() =>
+                      router.push(
+                        `/(tabs)/messages/chat/${item.finderId}?name=${encodeURIComponent(item.finderName)}&itemTitle=${encodeURIComponent(item.title)}` as any,
+                      )
+                    }
+                  />
+                ))}
+              </View>
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyTitle}>No {category} items yet</Text>
+                <Text style={styles.emptyText}>
+                  Found something? Report it so the owner can reach you.
+                </Text>
+              </View>
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -357,74 +496,77 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  actionRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  actionItem: {
-    flex: 1,
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  actionTile: {
-    width: 54,
-    height: 54,
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    alignItems: "center",
-    justifyContent: "center",
-    ...shadows.card,
-  },
-  actionTileDark: {
-    backgroundColor: "#14161F",
-  },
-  actionLabel: {
-    fontSize: 10,
-    color: colors.textSecondary,
-    textAlign: "center",
-  },
   banner: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: spacing.md,
+    gap: spacing.md,
+    minHeight: 132,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
     borderRadius: radius.lg,
     backgroundColor: "#2A2410",
     overflow: "hidden",
   },
+  bannerGlowLarge: {
+    position: "absolute",
+    right: -40,
+    bottom: -60,
+    width: 180,
+    height: 180,
+    borderRadius: radius.full,
+    backgroundColor: colors.primary,
+    opacity: 0.16,
+  },
+  bannerGlowSmall: {
+    position: "absolute",
+    right: 40,
+    top: -30,
+    width: 80,
+    height: 80,
+    borderRadius: radius.full,
+    backgroundColor: colors.primary,
+    opacity: 0.1,
+  },
   bannerText: {
     flex: 1,
-    gap: spacing.xs,
+    gap: spacing.sm,
   },
   bannerPill: {
     alignSelf: "flex-start",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
     borderRadius: radius.full,
     backgroundColor: "rgba(255,255,255,0.12)",
   },
   bannerPillText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: "600",
     color: colors.primary,
   },
   bannerTitle: {
-    fontSize: typography.md,
+    fontSize: typography.lg,
     fontWeight: "700",
     color: "#FFFFFF",
-    lineHeight: 20,
+    lineHeight: 24,
   },
   bannerSub: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.6)",
+    fontSize: 12,
+    lineHeight: 17,
+    color: "rgba(255,255,255,0.65)",
   },
   bannerGift: {
-    width: 52,
-    height: 52,
+    width: 60,
+    height: 60,
     borderRadius: radius.md,
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
   },
   section: {
     gap: spacing.md,
@@ -498,5 +640,128 @@ const styles = StyleSheet.create({
   },
   chipTextActive: {
     fontWeight: "700",
+  },
+
+  // Trending item cards
+  trendList: {
+    gap: spacing.md,
+  },
+  trendCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    overflow: "hidden",
+    ...shadows.card,
+  },
+  trendBody: {
+    padding: spacing.sm,
+    gap: spacing.sm,
+  },
+  trendTop: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  trendImage: {
+    width: 112,
+    height: 96,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSecondary,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  trendInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  trendTitle: {
+    fontSize: typography.md,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  trendDescription: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: colors.textSecondary,
+  },
+  trendMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  trendMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  trendMetaLocation: {
+    flexShrink: 1,
+  },
+  trendMetaText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    flexShrink: 1,
+  },
+  finderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primarySoft,
+  },
+  finderAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.full,
+    backgroundColor: colors.surface,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  finderAvatarText: {
+    fontSize: typography.xs,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  finderText: {
+    flex: 1,
+  },
+  finderName: {
+    fontSize: typography.sm,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  finderInfo: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  chatButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 8,
+    borderRadius: radius.full,
+    backgroundColor: colors.primary,
+  },
+  chatButtonText: {
+    fontSize: typography.xs,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  emptyState: {
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    ...shadows.card,
+  },
+  emptyTitle: {
+    fontSize: typography.sm,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  emptyText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: "center",
   },
 });

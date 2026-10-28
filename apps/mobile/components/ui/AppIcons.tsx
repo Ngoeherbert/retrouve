@@ -31,6 +31,9 @@ import {
   HelpCircleIcon,
   Edit01Icon,
   CheckIcon,
+  SendIcon,
+  PaperclipIcon,
+  Mic01Icon,
 } from "@hugeicons/core-free-icons";
 
 export const appIcons = {
@@ -63,6 +66,9 @@ export const appIcons = {
   settingsAlt: Settings02Icon,
   help: HelpCircleIcon,
   edit: Edit01Icon,
+  send: SendIcon,
+  paperclip: PaperclipIcon,
+  mic: Mic01Icon,
 } satisfies Record<string, IconSvgElement>;
 
 export type AppIconName = keyof typeof appIcons;

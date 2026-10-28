@@ -1,7 +1,16 @@
-import { Pressable, Text, View, StyleSheet, Animated, Dimensions } from 'react-native';
-import { usePathname } from 'expo-router';
-import { colors, spacing, radius } from '../../constants/theme';
-import { AppIcon, type AppIconName } from '../ui/AppIcons';
+import { useEffect, useState } from "react";
+import {
+  Pressable,
+  Text,
+  View,
+  StyleSheet,
+  Animated,
+  useAnimatedValue,
+  type LayoutChangeEvent,
+} from "react-native";
+import { usePathname } from "expo-router";
+import { colors, spacing, radius } from "../../constants/theme";
+import { AppIcon, type AppIconName } from "../ui/AppIcons";
 
 type TabConfig = {
   name: string;
@@ -12,140 +21,164 @@ type TabConfig = {
 };
 
 const TABS: TabConfig[] = [
-  { name: 'home', href: '/(tabs)/home', icon: 'home', label: 'Home' },
-  { name: 'explore', href: '/(tabs)/explore', icon: 'explore', label: 'Explore' },
-  { name: 'create', href: '/(tabs)/create', icon: 'create', label: 'Create', isCenter: true },
-  { name: 'messages', href: '/(tabs)/messages', icon: 'messages', label: 'Messages' },
-  { name: 'profile', href: '/(tabs)/profile', icon: 'profile', label: 'Profile' },
+  { name: "home", href: "/(tabs)/home", icon: "home", label: "Home" },
+  {
+    name: "explore",
+    href: "/(tabs)/explore",
+    icon: "explore",
+    label: "Explore",
+  },
+  {
+    name: "create",
+    href: "/(tabs)/create",
+    icon: "create",
+    label: "Create",
+    isCenter: true,
+  },
+  {
+    name: "messages",
+    href: "/(tabs)/messages",
+    icon: "messages",
+    label: "Messages",
+  },
+  {
+    name: "profile",
+    href: "/(tabs)/profile",
+    icon: "profile",
+    label: "Profile",
+  },
 ];
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const TAB_COUNT = 5;
-const CENTER_INDEX = 2;
-
-const shadows = {
-  floating: {
-    shadowColor: colors.text,
-    shadowOffset: { width: 0, height: -6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  pill: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-};
+const CENTER_INDEX = TABS.findIndex((t) => t.isCenter);
+const BAR_HEIGHT = 64;
+const BAR_PADDING = spacing.sm;
+const PILL_HEIGHT = 48;
+const CENTER_SIZE = 52;
 
 export default function BottomBar(props: {
   state: { routes: { name: string }[]; index: number };
   navigation: { dispatch: (action: any) => void };
 }) {
-  const { navigation } = props;
+  const { state, navigation } = props;
+
+  // Hide the tab bar on nested Stack screens (e.g. chat threads)
   const pathname = usePathname();
 
-  const getActiveTabIndex = () => {
-    const activeName = TABS.find((tab) => pathname.startsWith(tab.href))?.name ?? 'home';
-    return TABS.findIndex((tab) => tab.name === activeName);
-  };
+  // Map the navigator's active route to our TABS order (don't assume they match)
+  const activeRouteName = state.routes[state.index]?.name;
+  const found = TABS.findIndex((t) => t.name === activeRouteName);
+  const activeIndex = found === -1 ? 0 : found;
 
-  const activeIndex = getActiveTabIndex();
-  const pillPosition = new Animated.Value(activeIndex);
+  const [barWidth, setBarWidth] = useState(0);
+  const slotWidth =
+    barWidth > 0 ? (barWidth - BAR_PADDING * 2) / TABS.length : 0;
+  const pillWidth = Math.min(Math.max(slotWidth - 8, 0), 76);
 
-  Animated.timing(pillPosition, {
-    toValue: activeIndex,
-    duration: 300,
-    useNativeDriver: true,
-  }).start();
+  const pillPosition = useAnimatedValue(activeIndex);
 
-  const handleTabPress = (tab: TabConfig, index: number) => {
-    pillPosition.setValue(index);
-    Animated.timing(pillPosition, {
-      toValue: index,
-      duration: 300,
+  useEffect(() => {
+    Animated.spring(pillPosition, {
+      toValue: activeIndex,
       useNativeDriver: true,
+      damping: 18,
+      stiffness: 220,
+      mass: 0.8,
     }).start();
-    navigation.dispatch({ type: 'JUMP_TO', payload: { name: tab.name } });
+  }, [activeIndex, pillPosition]);
+
+  const cleanPath = pathname.replace("/(tabs)", "");
+  const isTabRoot = TABS.some((tab) => cleanPath === `/${tab.name}`);
+  if (!isTabRoot) return null;
+
+  const handleTabPress = (tab: TabConfig) => {
+    navigation.dispatch({ type: "JUMP_TO", payload: { name: tab.name } });
   };
 
-  const tabWidth = (SCREEN_WIDTH - spacing.md * 2 - spacing.xl * 4) / 4;
+  const onBarLayout = (e: LayoutChangeEvent) =>
+    setBarWidth(e.nativeEvent.layout.width);
 
+  const inputRange = TABS.map((_, i) => i);
   const pillStyle = {
-    position: 'absolute' as const,
-    bottom: spacing.xl + 4,
-    height: 60,
-    width: tabWidth + 8,
+    position: "absolute" as const,
+    top: (BAR_HEIGHT - PILL_HEIGHT) / 2,
+    left: 0,
+    height: PILL_HEIGHT,
+    width: pillWidth,
     borderRadius: radius.full,
     backgroundColor: colors.primary,
-    ...shadows.pill,
+    // Hide the pill while the Create tab is active; it has its own button
+    opacity: pillPosition.interpolate({
+      inputRange: [CENTER_INDEX - 0.6, CENTER_INDEX, CENTER_INDEX + 0.6],
+      outputRange: [1, 0, 1],
+      extrapolate: "clamp",
+    }),
     transform: [
       {
         translateX: pillPosition.interpolate({
-          inputRange: [0, 1, 2, 3, 4],
-          outputRange: [
-            spacing.md + 4,
-            spacing.md + tabWidth + spacing.xl + 4,
-            spacing.md + tabWidth * 2 + spacing.xl * 2 + 4 + 28,
-            spacing.md + tabWidth * 3 + spacing.xl * 3 + 4,
-            spacing.md + tabWidth * 4 + spacing.xl * 4 + 4,
-          ],
+          inputRange,
+          outputRange: inputRange.map(
+            (i) => BAR_PADDING + i * slotWidth + (slotWidth - pillWidth) / 2,
+          ),
         }),
       },
     ],
   };
 
-  return (
-    <View style={styles.container}>
-      <Animated.View style={pillStyle} />
-      <View style={styles.content}>
-        {TABS.map((tab, index) => {
-          const isActive = activeIndex === index;
-          const isCenter = tab.isCenter;
+  const centerTab = TABS[CENTER_INDEX];
+  const isCenterActive = activeIndex === CENTER_INDEX;
 
+  return (
+    <View style={styles.container} pointerEvents="box-none">
+      <View style={styles.bar} onLayout={onBarLayout}>
+        {barWidth > 0 && (
+          <Animated.View pointerEvents="none" style={pillStyle} />
+        )}
+
+        {TABS.map((tab, index) => {
+          // Empty slot: the real button is rendered above the bar
+          if (tab.isCenter) return <View key={tab.name} style={styles.tab} />;
+
+          const isActive = activeIndex === index;
           return (
             <Pressable
               key={tab.name}
-              style={[
-                styles.tab,
-                isCenter && styles.centerTab,
-                isCenter && { zIndex: 2 },
-              ]}
-              onPress={() => handleTabPress(tab, index)}
+              style={styles.tab}
+              onPress={() => handleTabPress(tab)}
               accessibilityRole="button"
               accessibilityLabel={tab.label}
               accessibilityState={{ selected: isActive }}
-              hitSlop={{ top: 8, bottom: 8, left: 12, right: 12 }}
+              hitSlop={{ top: 8, bottom: 8, left: 2, right: 2 }}
             >
-              {isCenter ? (
-                <View style={[
-                  styles.centerButton,
-                  isActive && styles.centerButtonActive,
-                ]}>
-                  <AppIcon name={tab.icon} size={28} color={isActive ? '#FFFFFF' : colors.primary} />
-                </View>
-              ) : (
-                <>
-                  <AppIcon
-                    name={tab.icon}
-                    size={24}
-                    color={isActive ? '#FFFFFF' : colors.textMuted}
-                  />
-                  <Text
-                    style={[
-                      styles.label,
-                      isActive && styles.labelActive,
-                    ]}
-                  >
-                    {tab.label}
-                  </Text>
-                </>
-              )}
+              <AppIcon
+                name={tab.icon}
+                size={22}
+                color={isActive ? colors.text : colors.textMuted}
+              />
+              <Text
+                style={[styles.label, isActive && styles.labelActive]}
+                numberOfLines={1}
+              >
+                {tab.label}
+              </Text>
             </Pressable>
           );
         })}
+      </View>
+
+      {/* Raised Create button. Lives inside the container bounds so Android registers touches. */}
+      <View style={styles.centerWrap} pointerEvents="box-none">
+        <Pressable
+          onPress={() => handleTabPress(centerTab)}
+          accessibilityRole="button"
+          accessibilityLabel={centerTab.label}
+          accessibilityState={{ selected: isCenterActive }}
+          style={[
+            styles.centerButton,
+            isCenterActive && styles.centerButtonActive,
+          ]}
+        >
+          <AppIcon name={centerTab.icon} size={26} color={colors.text} />
+        </Pressable>
       </View>
     </View>
   );
@@ -153,59 +186,65 @@ export default function BottomBar(props: {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 0,
+    position: "absolute",
     left: 0,
     right: 0,
+    bottom: 0,
     paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-    height: 100,
+    paddingBottom: spacing.lg,
+    paddingTop: CENTER_SIZE / 2,
   },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
+  bar: {
+    height: BAR_HEIGHT,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderRadius: radius.full,
+    paddingHorizontal: BAR_PADDING,
+    shadowColor: colors.text,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    elevation: 10,
   },
   tab: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-  },
-  centerTab: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -20,
-  },
-  centerButton: {
-    width: 56,
-    height: 56,
-    borderRadius: radius.full,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.primary,
-    ...shadows.floating,
-  },
-  centerButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 3,
   },
   label: {
+    fontSize: 11,
+    fontWeight: "500",
     color: colors.textMuted,
-    fontSize: 10,
-    fontWeight: '500',
-    position: 'absolute',
-    bottom: -18,
   },
   labelActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: colors.text,
+    fontWeight: "700",
+  },
+  centerWrap: {
+    position: "absolute",
+    top: 4,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  centerButton: {
+    width: CENTER_SIZE,
+    height: CENTER_SIZE,
+    borderRadius: CENTER_SIZE / 2,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 12,
+  },
+  centerButtonActive: {
+    borderWidth: 3,
+    borderColor: colors.text,
   },
 });
