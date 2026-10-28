@@ -5,6 +5,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Pressable,
+  Image,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -19,6 +20,7 @@ type Conversation = {
   time: string;
   unread: number;
   avatar: string;
+  avatarUrl: string;
 };
 
 const conversations: Conversation[] = [
@@ -31,6 +33,7 @@ const conversations: Conversation[] = [
     time: "2h ago",
     unread: 2,
     avatar: "SC",
+    avatarUrl: "https://placehold.co/48x48/eaf0ff/3563e9?text=SC",
   },
   {
     id: "2",
@@ -41,6 +44,7 @@ const conversations: Conversation[] = [
     time: "5h ago",
     unread: 0,
     avatar: "MR",
+    avatarUrl: "https://placehold.co/48x48/eaf0ff/3563e9?text=MR",
   },
   {
     id: "3",
@@ -50,6 +54,7 @@ const conversations: Conversation[] = [
     time: "1d ago",
     unread: 1,
     avatar: "PN",
+    avatarUrl: "https://placehold.co/48x48/eaf0ff/3563e9?text=PN",
   },
 ];
 
@@ -103,7 +108,11 @@ export default function MessagesScreen() {
                 accessibilityLabel={`Conversation with ${item.name} about ${item.itemTitle}, ${item.unread} unread messages`}
               >
                 <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>{item.avatar}</Text>
+                  {item.avatarUrl ? (
+                    <Image source={{ uri: item.avatarUrl }} style={styles.avatarImage} />
+                  ) : (
+                    <Text style={styles.avatarText}>{item.avatar}</Text>
+                  )}
                   {item.unread > 0 && (
                     <View style={styles.unreadBadge}>
                       <Text style={styles.unreadText}>
@@ -182,6 +191,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
   },
   avatarText: {
     fontSize: typography.sm,

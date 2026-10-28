@@ -1,14 +1,18 @@
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
 import type { Item } from '../../types/item';
 import StatusBadge from './StatusBadge';
 import { colors, radius, spacing, shadows } from '../../constants/theme';
+import { AppIcon } from './AppIcons';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface ItemCardProps {
   item: Item;
   onPress: () => void;
+  hasCamera?: boolean;
 }
 
-export default function ItemCard({ item, onPress }: ItemCardProps) {
+export default function ItemCard({ item, onPress, hasCamera = false }: ItemCardProps) {
   const isLost = item.status === 'lost';
 
   return (
@@ -22,6 +26,11 @@ export default function ItemCard({ item, onPress }: ItemCardProps) {
       ) : (
         <View style={[styles.image, styles.imagePlaceholder]}>
           <Text style={styles.placeholderText}>No photo</Text>
+          {hasCamera && (
+            <View style={styles.cameraOverlay}>
+              <AppIcon name="camera" size={28} color="white" strokeWidth={2} />
+            </View>
+          )}
         </View>
       )}
 
@@ -61,10 +70,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     overflow: 'hidden',
     ...shadows.card,
+    width: SCREEN_WIDTH - 32,
   },
   image: {
     width: '100%',
-    height: 150,
+    height: 180,
     backgroundColor: colors.surfaceSecondary,
   },
   imagePlaceholder: { alignItems: 'center', justifyContent: 'center' },
@@ -75,4 +85,12 @@ const styles = StyleSheet.create({
   date: { color: colors.textMuted, fontSize: 12 },
   action: { fontSize: 13, fontWeight: '700', marginTop: 2 },
   pressed: { opacity: 0.85 },
+  cameraOverlay: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: radius.full,
+    padding: 4,
+  },
 });

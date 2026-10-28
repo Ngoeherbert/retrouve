@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   View,
   Text,
@@ -5,6 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Pressable,
+  Image,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors, spacing, typography } from "../../../constants/theme";
@@ -98,6 +100,9 @@ function SettingRow({
 export default function ProfileScreen() {
   // TODO: read the current theme from your theme store
   const mode: ThemeMode = "light";
+  const [imageUri] = useState<string | null>(
+    "https://placehold.co/88x88/eaf0ff/3563e9?text=JD",
+  );
 
   return (
     <SafeAreaProvider>
@@ -109,9 +114,31 @@ export default function ProfileScreen() {
         >
           <View style={styles.profileHeader}>
             <View style={styles.avatarContainer}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>JD</Text>
-              </View>
+              {imageUri ? (
+                <Image
+                  source={{ uri: imageUri }}
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>JD</Text>
+                </View>
+              )}
+              {imageUri !== null && (
+                <Pressable
+                  style={styles.changePhotoButton}
+                  onPress={() => {}}
+                  accessibilityRole="button"
+                  accessibilityLabel="Change photo"
+                >
+                  <AppIcon
+                    name="image"
+                    size={20}
+                    color={colors.surface}
+                    strokeWidth={2}
+                  />
+                </Pressable>
+              )}
               <View style={styles.verifiedBadge}>
                 <AppIcon
                   name="check"
@@ -402,5 +429,29 @@ const styles = StyleSheet.create({
     fontSize: typography.md,
     fontWeight: "600",
     color: colors.danger,
+  },
+  avatarIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceSecondary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarImage: {
+    width: 88,
+    height: 88,
+    borderRadius: radius.full,
+  },
+  changePhotoButton: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderRadius: radius.full,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

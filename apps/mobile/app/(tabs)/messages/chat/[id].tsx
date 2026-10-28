@@ -11,6 +11,7 @@ import {
   Platform,
   Modal,
   useWindowDimensions,
+  Image,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -58,11 +59,11 @@ const EDGE_BOTTOM = 32;
 
 const conversationData: Record<
   string,
-  { name: string; avatar: string; itemTitle: string }
+  { name: string; avatar: string; avatarUrl: string; itemTitle: string }
 > = {
-  "1": { name: "Sarah Chen", avatar: "SC", itemTitle: "AirPods Pro" },
-  "2": { name: "Mike Rodriguez", avatar: "MR", itemTitle: "Black Wallet" },
-  "3": { name: "Priya Nair", avatar: "PN", itemTitle: "Silver Ring" },
+  "1": { name: "Sarah Chen", avatar: "SC", avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=SC", itemTitle: "AirPods Pro" },
+  "2": { name: "Mike Rodriguez", avatar: "MR", avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=MR", itemTitle: "Black Wallet" },
+  "3": { name: "Priya Nair", avatar: "PN", avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=PN", itemTitle: "Silver Ring" },
 };
 
 const messageData: Record<string, Message[]> = {
@@ -199,6 +200,7 @@ export default function ChatScreen() {
       .slice(0, 2)
       .join("")
       .toUpperCase(),
+    avatarUrl: "",
     itemTitle: itemTitle ?? "Item",
   };
   const [messages, setMessages] = useState<Message[]>(
@@ -504,7 +506,11 @@ export default function ChatScreen() {
               />
             </Pressable>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{conversation.avatar}</Text>
+              {conversation.avatarUrl ? (
+                <Image source={{ uri: conversation.avatarUrl }} style={styles.avatarImage} />
+              ) : (
+                <Text style={styles.avatarText}>{conversation.avatar}</Text>
+              )}
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.headerName} numberOfLines={1}>
@@ -689,6 +695,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
   },
   avatarText: {
     fontSize: typography.sm,

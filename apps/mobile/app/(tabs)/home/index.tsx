@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Pressable,
   TextInput,
+  Image,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -25,13 +26,14 @@ const ICONS = {
 } satisfies Record<string, AppIconName>;
 
 const nearbyItems = [
-  { id: "1", name: "AirPods Pro", place: "Central Park", distance: "0.4 Mi" },
-  { id: "2", name: "Silver Ring", place: "5th Ave", distance: "0.8 Mi" },
+  { id: "1", name: "AirPods Pro", place: "Central Park", distance: "0.4 Mi", imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=AirPods+Pro" },
+  { id: "2", name: "Silver Ring", place: "5th Ave", distance: "0.8 Mi", imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=Silver+Ring" },
   {
     id: "3",
     name: "Black Wallet",
     place: "Brooklyn Bridge Park",
     distance: "2.1 Mi",
+    imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=Black+Wallet",
   },
 ];
 
@@ -48,6 +50,8 @@ type TrendingItem = {
   location: string;
   finderName: string;
   finderInfo: string;
+  imageUrl: string;
+  avatarUrl: string;
   popular?: boolean;
 };
 
@@ -64,6 +68,8 @@ const trendingItems: TrendingItem[] = [
     location: "College ground",
     finderName: "Meenal Parekh",
     finderInfo: "Btech I.T 2nd year",
+    imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=Duffle+Bag",
+    avatarUrl: "https://placehold.co/60x60/eaf0ff/3563e9?text=MP",
     popular: true,
   },
   {
@@ -78,6 +84,8 @@ const trendingItems: TrendingItem[] = [
     location: "Central Park",
     finderName: "Daniel Reyes",
     finderInfo: "Visitor",
+    imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=AirPods+Pro",
+    avatarUrl: "https://placehold.co/60x60/eaf0ff/3563e9?text=DR",
     popular: true,
   },
   {
@@ -92,6 +100,9 @@ const trendingItems: TrendingItem[] = [
     location: "Brooklyn Bridge Park",
     finderName: "Priya Nair",
     finderInfo: "Local resident",
+    imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=Black+Wallet",
+    avatarUrl: "https://placehold.co/60x60/eaf0ff/3563e9?text=PN",
+    popular: false,
   },
   {
     id: "t4",
@@ -105,6 +116,8 @@ const trendingItems: TrendingItem[] = [
     location: "Union Square",
     finderName: "Tom Becker",
     finderInfo: "Security staff",
+    imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=Car+Keys",
+    avatarUrl: "https://placehold.co/60x60/eaf0ff/3563e9?text=TB",
   },
 ];
 
@@ -126,15 +139,6 @@ const radius = {
   full: 999,
 };
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
-
 function TrendingCard({
   item,
   onChat,
@@ -146,10 +150,11 @@ function TrendingCard({
     <View style={styles.trendCard}>
       <View style={styles.trendBody}>
         <View style={styles.trendTop}>
-          {/* Replace with <Image source={{ uri: item.imageUrl }} style={styles.trendImage} /> */}
-          <View style={styles.trendImage}>
-            <AppIcon name="package" size={32} color={colors.textMuted} />
-          </View>
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={styles.trendImage}
+            resizeMode="cover"
+          />
           <View style={styles.trendInfo}>
             <Text style={styles.trendTitle} numberOfLines={1}>
               {item.title}
@@ -179,11 +184,11 @@ function TrendingCard({
       </View>
 
       <View style={styles.finderRow}>
-        <View style={styles.finderAvatar}>
-          <Text style={styles.finderAvatarText}>
-            {initials(item.finderName)}
-          </Text>
-        </View>
+        <Image
+          source={{ uri: item.avatarUrl }}
+          style={styles.finderAvatar}
+          resizeMode="cover"
+        />
         <View style={styles.finderText}>
           <Text style={styles.finderName} numberOfLines={1}>
             {item.finderName}
@@ -310,15 +315,12 @@ export default function HomeScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={item.name}
                 >
-                  {/* Replace with <Image source={{ uri: item.imageUrl }} style={styles.itemImage} /> */}
-                  <View style={styles.itemImage}>
-                    <AppIcon
-                      name="package"
-                      size={32}
-                      color={colors.textMuted}
-                    />
-                  </View>
-                  <View style={styles.itemInfo}>
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.itemImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.itemInfo}>
                     <Text style={styles.itemName} numberOfLines={1}>
                       {item.name}
                     </Text>
@@ -716,11 +718,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
-  },
-  finderAvatarText: {
-    fontSize: typography.xs,
-    fontWeight: "700",
-    color: colors.text,
   },
   finderText: {
     flex: 1,
