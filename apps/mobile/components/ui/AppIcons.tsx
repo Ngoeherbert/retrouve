@@ -18,37 +18,51 @@ import {
   Location01Icon,
   Calendar01Icon,
   Bookmark01Icon,
-  HeartAddIcon,
+  HeartIcon,
   Share01Icon,
   MoreHorizontalIcon,
   SearchAddIcon,
   Logout01Icon,
   Menu01Icon,
+  BoxIcon,
+  BookmarkAddIcon,
+  TrophyIcon,
+  Settings02Icon,
+  HelpCircleIcon,
+  Edit01Icon,
+  CheckIcon,
 } from "@hugeicons/core-free-icons";
 
 export const appIcons = {
   home: Home01Icon,
-  search: Search01Icon,
-  add: Add01Icon,
+  explore: Search01Icon,
+  create: Add01Icon,
   messages: Message01Icon,
-  user: UserIcon,
+  profile: UserIcon,
   notifications: Notification01Icon,
   settings: Settings01Icon,
   back: ArrowLeft01Icon,
-  next: ArrowRight01Icon,
-  close: Cancel01Icon,
+  forward: ArrowRight01Icon,
+  cancel: Cancel01Icon,
   check: CheckmarkCircle01Icon,
+  checkSolid: CheckIcon,
   image: Image01Icon,
   camera: Camera01Icon,
   location: Location01Icon,
   calendar: Calendar01Icon,
   bookmark: Bookmark01Icon,
-  like: HeartAddIcon,
+  heart: HeartIcon,
   share: Share01Icon,
   more: MoreHorizontalIcon,
   searchAdd: SearchAddIcon,
   logout: Logout01Icon,
   menu: Menu01Icon,
+  package: BoxIcon,
+  bookmarkAdd: BookmarkAddIcon,
+  trophy: TrophyIcon,
+  settingsAlt: Settings02Icon,
+  help: HelpCircleIcon,
+  edit: Edit01Icon,
 } satisfies Record<string, IconSvgElement>;
 
 export type AppIconName = keyof typeof appIcons;
@@ -60,6 +74,6 @@ interface AppIconProps {
   strokeWidth?: number;
 }
 
-export function AppIcon({ name, size = 24, color = "#222222" }: AppIconProps) {
-  return <HugeiconsIcon icon={appIcons[name]} size={size} color={color} />;
+export function AppIcon({ name, size = 24, color = "#222222", strokeWidth = 2 }: AppIconProps) {
+  return <HugeiconsIcon icon={appIcons[name]} size={size} color={color} strokeWidth={strokeWidth} />;
 }
