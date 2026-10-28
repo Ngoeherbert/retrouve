@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   View,
   Text,
@@ -58,6 +59,27 @@ const conversations: Conversation[] = [
   },
 ];
 
+function ConversationAvatar({
+  avatar,
+  avatarUrl,
+}: Pick<Conversation, "avatar" | "avatarUrl">) {
+  const [failed, setFailed] = useState(false);
+
+  if (!avatarUrl || failed) {
+    return <Text style={styles.avatarText}>{avatar}</Text>;
+  }
+
+  return (
+    <View style={styles.avatarImageWrapper}>
+      <Image
+        source={{ uri: avatarUrl }}
+        style={styles.avatarImage}
+        onError={() => setFailed(true)}
+      />
+    </View>
+  );
+}
+
 export default function MessagesScreen() {
   const router = useRouter();
 
@@ -108,11 +130,11 @@ export default function MessagesScreen() {
                 accessibilityLabel={`Conversation with ${item.name} about ${item.itemTitle}, ${item.unread} unread messages`}
               >
                 <View style={styles.avatar}>
-                  {item.avatarUrl ? (
-                    <Image source={{ uri: item.avatarUrl }} style={styles.avatarImage} />
-                  ) : (
-                    <Text style={styles.avatarText}>{item.avatar}</Text>
-                  )}
+                  <ConversationAvatar
+                    key={item.avatarUrl}
+                    avatar={item.avatar}
+                    avatarUrl={item.avatarUrl}
+                  />
                   {item.unread > 0 && (
                     <View style={styles.unreadBadge}>
                       <Text style={styles.unreadText}>
@@ -191,6 +213,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
     alignItems: "center",
     justifyContent: "center",
+  },
+  avatarImageWrapper: {
+    width: "100%",
+    height: "100%",
+    borderRadius: radius.full,
     overflow: "hidden",
   },
   avatarImage: {

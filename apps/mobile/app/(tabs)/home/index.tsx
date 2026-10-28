@@ -26,8 +26,20 @@ const ICONS = {
 } satisfies Record<string, AppIconName>;
 
 const nearbyItems = [
-  { id: "1", name: "AirPods Pro", place: "Central Park", distance: "0.4 Mi", imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=AirPods+Pro" },
-  { id: "2", name: "Silver Ring", place: "5th Ave", distance: "0.8 Mi", imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=Silver+Ring" },
+  {
+    id: "1",
+    name: "AirPods Pro",
+    place: "Central Park",
+    distance: "0.4 Mi",
+    imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=AirPods+Pro",
+  },
+  {
+    id: "2",
+    name: "Silver Ring",
+    place: "5th Ave",
+    distance: "0.8 Mi",
+    imageUrl: "https://placehold.co/300x220/1665ed/ffffff?text=Silver+Ring",
+  },
   {
     id: "3",
     name: "Black Wallet",
@@ -146,6 +158,14 @@ function TrendingCard({
   item: TrendingItem;
   onChat: () => void;
 }) {
+  const [failedAvatarUrl, setFailedAvatarUrl] = useState<string | null>(null);
+  const finderInitials = item.finderName
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   return (
     <View style={styles.trendCard}>
       <View style={styles.trendBody}>
@@ -184,11 +204,18 @@ function TrendingCard({
       </View>
 
       <View style={styles.finderRow}>
-        <Image
-          source={{ uri: item.avatarUrl }}
-          style={styles.finderAvatar}
-          resizeMode="cover"
-        />
+        <View style={styles.finderAvatar}>
+          {failedAvatarUrl === item.avatarUrl ? (
+            <Text style={styles.finderAvatarText}>{finderInitials}</Text>
+          ) : (
+            <Image
+              source={{ uri: item.avatarUrl }}
+              style={styles.finderAvatarImage}
+              resizeMode="cover"
+              onError={() => setFailedAvatarUrl(item.avatarUrl)}
+            />
+          )}
+        </View>
         <View style={styles.finderText}>
           <Text style={styles.finderName} numberOfLines={1}>
             {item.finderName}
@@ -315,12 +342,12 @@ export default function HomeScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={item.name}
                 >
-                <Image
-                  source={{ uri: item.imageUrl }}
-                  style={styles.itemImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.itemInfo}>
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={styles.itemImage}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.itemInfo}>
                     <Text style={styles.itemName} numberOfLines={1}>
                       {item.name}
                     </Text>
@@ -718,6 +745,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
+  },
+  finderAvatarImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: radius.full,
+  },
+  finderAvatarText: {
+    fontSize: typography.xs,
+    fontWeight: "700",
+    color: colors.primary,
   },
   finderText: {
     flex: 1,

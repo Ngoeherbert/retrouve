@@ -1,6 +1,6 @@
 import type { Item } from "../types/item";
 
-export const mockItems: Item[] = [
+export const mockItems: Item[] =[
   {
     id: "item-1",
     title: "Black leather wallet",
@@ -9,7 +9,7 @@ export const mockItems: Item[] = [
     status: "lost",
     location: "Buea Town",
     date: "2026-10-25",
-    image: null,
+    image: "https://placehold.co/400x300/1665ed/ffffff?text=Black+Wallet",
     ownerName: "Michael N.",
     organizationId: null,
   },
@@ -21,7 +21,7 @@ export const mockItems: Item[] = [
     status: "found",
     location: "University of Buea",
     date: "2026-10-24",
-    image: null,
+    image: "https://placehold.co/400x300/1665ed/ffffff?text=Silver+iPhone",
     ownerName: "Sarah L.",
     organizationId: "org-1",
   },
@@ -33,7 +33,7 @@ export const mockItems: Item[] = [
     status: "lost",
     location: "Molyko",
     date: "2026-10-23",
-    image: null,
+    image: "https://placehold.co/400x300/1665ed/ffffff?text=Blue+Backpack",
     ownerName: "Daniel T.",
     organizationId: null,
   },
@@ -45,7 +45,7 @@ export const mockItems: Item[] = [
     status: "found",
     location: "Buea Town",
     date: "2026-10-22",
-    image: null,
+    image: "https://placehold.co/400x300/1665ed/ffffff?text=Car+Keys",
     ownerName: "Retrouve Team",
     organizationId: "org-1",
   },
@@ -57,7 +57,7 @@ export const mockItems: Item[] = [
     status: "found",
     location: "Molyko",
     date: "2026-10-21",
-    image: null,
+    image: "https://placehold.co/400x300/1665ed/ffffff?text=ID+Card",
     ownerName: "Grace M.",
     organizationId: null,
   },

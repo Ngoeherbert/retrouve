@@ -103,6 +103,7 @@ export default function ProfileScreen() {
   const [imageUri] = useState<string | null>(
     "https://placehold.co/88x88/eaf0ff/3563e9?text=JD",
   );
+  const [failedImageUri, setFailedImageUri] = useState<string | null>(null);
 
   return (
     <SafeAreaProvider>
@@ -114,10 +115,11 @@ export default function ProfileScreen() {
         >
           <View style={styles.profileHeader}>
             <View style={styles.avatarContainer}>
-              {imageUri ? (
+              {imageUri && failedImageUri !== imageUri ? (
                 <Image
                   source={{ uri: imageUri }}
                   style={styles.avatarImage}
+                  onError={() => setFailedImageUri(imageUri)}
                 />
               ) : (
                 <View style={styles.avatar}>

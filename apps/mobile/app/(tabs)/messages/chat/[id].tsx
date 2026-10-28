@@ -61,9 +61,24 @@ const conversationData: Record<
   string,
   { name: string; avatar: string; avatarUrl: string; itemTitle: string }
 > = {
-  "1": { name: "Sarah Chen", avatar: "SC", avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=SC", itemTitle: "AirPods Pro" },
-  "2": { name: "Mike Rodriguez", avatar: "MR", avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=MR", itemTitle: "Black Wallet" },
-  "3": { name: "Priya Nair", avatar: "PN", avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=PN", itemTitle: "Silver Ring" },
+  "1": {
+    name: "Sarah Chen",
+    avatar: "SC",
+    avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=SC",
+    itemTitle: "AirPods Pro",
+  },
+  "2": {
+    name: "Mike Rodriguez",
+    avatar: "MR",
+    avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=MR",
+    itemTitle: "Black Wallet",
+  },
+  "3": {
+    name: "Priya Nair",
+    avatar: "PN",
+    avatarUrl: "https://placehold.co/40x40/eaf0ff/3563e9?text=PN",
+    itemTitle: "Silver Ring",
+  },
 };
 
 const messageData: Record<string, Message[]> = {
@@ -208,6 +223,7 @@ export default function ChatScreen() {
   );
 
   const [inputText, setInputText] = useState("");
+  const [failedAvatarUrl, setFailedAvatarUrl] = useState<string | null>(null);
   const [selected, setSelected] = useState<SelectedMessage | null>(null);
   const [groupH, setGroupH] = useState(0);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
@@ -506,8 +522,13 @@ export default function ChatScreen() {
               />
             </Pressable>
             <View style={styles.avatar}>
-              {conversation.avatarUrl ? (
-                <Image source={{ uri: conversation.avatarUrl }} style={styles.avatarImage} />
+              {conversation.avatarUrl &&
+              failedAvatarUrl !== conversation.avatarUrl ? (
+                <Image
+                  source={{ uri: conversation.avatarUrl }}
+                  style={styles.avatarImage}
+                  onError={() => setFailedAvatarUrl(conversation.avatarUrl)}
+                />
               ) : (
                 <Text style={styles.avatarText}>{conversation.avatar}</Text>
               )}

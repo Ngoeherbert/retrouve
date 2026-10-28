@@ -1,10 +1,15 @@
-import { View, Text, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
-import type { Item } from '../../types/item';
-import StatusBadge from './StatusBadge';
-import { colors, radius, spacing, shadows } from '../../constants/theme';
-import { AppIcon } from './AppIcons';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
+import type { Item } from "../../types/item";
+import StatusBadge from "./StatusBadge";
+import { colors, radius, spacing, shadows } from "../../constants/theme";
+import { AppIcon } from "./AppIcons";
 
 interface ItemCardProps {
   item: Item;
@@ -12,14 +17,23 @@ interface ItemCardProps {
   hasCamera?: boolean;
 }
 
-export default function ItemCard({ item, onPress, hasCamera = false }: ItemCardProps) {
-  const isLost = item.status === 'lost';
+export default function ItemCard({
+  item,
+  onPress,
+  hasCamera = false,
+}: ItemCardProps) {
+  const { width: windowWidth } = useWindowDimensions();
+  const isLost = item.status === "lost";
 
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        { width: windowWidth - 32 },
+        pressed && styles.pressed,
+      ]}
     >
       {item.image ? (
         <Image source={{ uri: item.image }} style={styles.image} />
@@ -55,7 +69,7 @@ export default function ItemCard({ item, onPress, hasCamera = false }: ItemCardP
             { color: isLost ? colors.danger : colors.success },
           ]}
         >
-          {isLost ? 'Help find this item' : 'Could this be yours?'}
+          {isLost ? "Help find this item" : "Could this be yours?"}
         </Text>
       </View>
     </Pressable>
@@ -68,28 +82,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...shadows.card,
-    width: SCREEN_WIDTH - 32,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 180,
     backgroundColor: colors.surfaceSecondary,
   },
-  imagePlaceholder: { alignItems: 'center', justifyContent: 'center' },
+  imagePlaceholder: { alignItems: "center", justifyContent: "center" },
   placeholderText: { color: colors.textMuted, fontSize: 13 },
   content: { padding: spacing.md, gap: spacing.sm },
-  title: { color: colors.text, fontSize: 17, fontWeight: '700' },
+  title: { color: colors.text, fontSize: 17, fontWeight: "700" },
   location: { color: colors.textSecondary, fontSize: 13 },
   date: { color: colors.textMuted, fontSize: 12 },
-  action: { fontSize: 13, fontWeight: '700', marginTop: 2 },
+  action: { fontSize: 13, fontWeight: "700", marginTop: 2 },
   pressed: { opacity: 0.85 },
   cameraOverlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 8,
     right: 8,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: radius.full,
     padding: 4,
   },
