@@ -1,98 +1,290 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useRef } from "react";
+import {
+  Animated,
+  Easing,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Brand as colors } from "@/constants/theme";
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+// Fades and lifts a view in once, after `delay` ms.
+function useEntrance(delay: number) {
+  const progress = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 480,
+      delay,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [progress, delay]);
+
+  return {
+    opacity: progress,
+    translateY: progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [18, 0],
+    }),
+  };
+}
+
+function SearchGlyph() {
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={styles.glyph}>
+      <View style={styles.glyphLens} />
+      <View style={styles.glyphHandle} />
+    </View>
   );
 }
 
-export default function HomeScreen() {
+function Button({
+  label,
+  onPress,
+  tone,
+}: {
+  label: string;
+  onPress: () => void;
+  tone: "yellow" | "white";
+}) {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.button,
+        { backgroundColor: tone === "yellow" ? colors.yellow : colors.white },
+        pressed && styles.buttonPressed,
+      ]}
+    >
+      <Text style={styles.buttonLabel}>{label}</Text>
+    </Pressable>
   );
 }
+
+export default function Welcome() {
+  const insets = useSafeAreaInsets();
+  const found = useEntrance(120);
+  const lost = useEntrance(260);
+
+  return (
+    <View
+      style={[
+        styles.screen,
+        {
+          paddingTop: insets.top + 12,
+          paddingBottom: Math.max(insets.bottom, 20) + 16,
+        },
+      ]}
+    >
+      <StatusBar style="dark" />
+
+      <View style={styles.brand}>
+        <View style={styles.logo}>
+          <SearchGlyph />
+        </View>
+        <Text style={styles.wordmark}>retrouve</Text>
+      </View>
+
+      <View style={styles.hero}>
+        <View style={styles.disc} />
+
+        <Animated.View
+          style={[
+            styles.card,
+            styles.cardFound,
+            {
+              opacity: found.opacity,
+              transform: [
+                { rotate: "-5deg" },
+                { translateY: found.translateY },
+              ],
+            },
+          ]}
+        >
+          <View style={[styles.tag, { backgroundColor: colors.ink }]}>
+            <Text style={[styles.tagLabel, { color: colors.white }]}>
+              Found
+            </Text>
+          </View>
+          <Text style={[styles.cardTitle, { color: colors.ink }]}>
+            Black wallet
+          </Text>
+          <Text style={[styles.cardMeta, { color: colors.muted }]}>
+            Molyko, 2h ago
+          </Text>
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            styles.card,
+            styles.cardLost,
+            {
+              opacity: lost.opacity,
+              transform: [{ rotate: "5deg" }, { translateY: lost.translateY }],
+            },
+          ]}
+        >
+          <View style={[styles.tag, { backgroundColor: colors.yellow }]}>
+            <Text style={[styles.tagLabel, { color: colors.ink }]}>Lost</Text>
+          </View>
+          <Text style={[styles.cardTitle, { color: colors.white }]}>
+            Car keys, red tag
+          </Text>
+          <Text style={[styles.cardMeta, { color: colors.mutedOnDark }]}>
+            Mile 17, 1d ago
+          </Text>
+        </Animated.View>
+      </View>
+
+      <Text style={styles.headline}>{"Lost it?\nRetrouve it."}</Text>
+      <Text style={styles.body}>
+        Report what you lost, share what you found, and get things back to their
+        owners.
+      </Text>
+
+      <View style={styles.spacer} />
+
+      {/* Routes arrive with the screen placeholders; `as never` keeps typed routes quiet until then. */}
+      <Button
+        label="Create account"
+        tone="yellow"
+        onPress={() => router.push("/sign-up" as never)}
+      />
+      <View style={{ height: 12 }} />
+      <Button
+        label="I already have an account"
+        tone="white"
+        onPress={() => router.push("/sign-in" as never)}
+      />
+    </View>
+  );
+}
+
+const CARD_W = 174;
+const CARD_H = 104;
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: colors.bg,
+    paddingHorizontal: 20,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+
+  brand: { flexDirection: "row", alignItems: "center" },
+  logo: {
+    width: 44,
+    height: 44,
+    borderRadius: 13,
+    backgroundColor: colors.yellow,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  wordmark: {
+    marginLeft: 10,
+    fontSize: 23,
+    fontWeight: "800",
+    letterSpacing: -0.8,
+    color: colors.ink,
   },
-  title: {
-    textAlign: 'center',
+
+  glyph: { width: 22, height: 22 },
+  glyphLens: {
+    position: "absolute",
+    left: 2,
+    top: 2,
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    borderWidth: 2.2,
+    borderColor: colors.ink,
   },
-  code: {
-    textTransform: 'uppercase',
+  glyphHandle: {
+    position: "absolute",
+    left: 14.5,
+    top: 13,
+    width: 2.4,
+    height: 7,
+    borderRadius: 2,
+    backgroundColor: colors.ink,
+    transform: [{ rotate: "-45deg" }],
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  hero: { height: 290, marginTop: 26 },
+  disc: {
+    position: "absolute",
+    left: 50,
+    top: 20,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: colors.yellow,
+  },
+  card: {
+    position: "absolute",
+    width: CARD_W,
+    height: CARD_H,
+    borderRadius: 20,
+    padding: 14,
+    shadowColor: colors.ink,
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
+  },
+  cardFound: { left: 6, top: 80, backgroundColor: colors.white },
+  cardLost: { left: 170, top: 180, backgroundColor: colors.ink },
+  tag: {
+    alignSelf: "flex-start",
+    height: 26,
+    paddingHorizontal: 11,
+    borderRadius: 13,
+    justifyContent: "center",
+  },
+  tagLabel: { fontSize: 12, fontWeight: "800", letterSpacing: 0.1 },
+  cardTitle: {
+    marginTop: 10,
+    fontSize: 17,
+    fontWeight: "700",
+    letterSpacing: -0.3,
+  },
+  cardMeta: { marginTop: 3, fontSize: 13.5 },
+
+  headline: {
+    marginTop: 48,
+    fontSize: 43,
+    lineHeight: 44,
+    fontWeight: "800",
+    letterSpacing: -1.7,
+    color: colors.ink,
+  },
+  body: {
+    marginTop: 14,
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.muted,
+  },
+
+  spacer: { flex: 1, minHeight: 24 },
+
+  button: {
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonPressed: { transform: [{ scale: 0.98 }], opacity: 0.92 },
+  buttonLabel: {
+    fontSize: 17,
+    fontWeight: "700",
+    letterSpacing: -0.2,
+    color: colors.ink,
   },
 });
