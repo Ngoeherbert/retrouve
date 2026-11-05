@@ -11,7 +11,10 @@ export default function ForgotPassword() {
   const ready = identifier.trim().length > 4;
 
   const submit = () => {
-    // TODO: request the reset link or code
+    router.push({
+      pathname: "/(auth)/verify-phone",
+      params: { target: identifier },
+    });
   };
 
   return (
@@ -27,6 +30,7 @@ export default function ForgotPassword() {
     >
       <Field
         label="Email or phone"
+        placeholder="you@example.com or phone number"
         value={identifier}
         onChangeText={setIdentifier}
         keyboardType="email-address"

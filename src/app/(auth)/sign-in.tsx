@@ -35,6 +35,7 @@ export default function SignIn() {
     >
       <Field
         label="Email or phone"
+        placeholder="Email or phone number"
         value={identifier}
         onChangeText={setIdentifier}
         keyboardType="email-address"
@@ -44,6 +45,7 @@ export default function SignIn() {
       />
       <Field
         label="Password"
+        placeholder="Enter your password"
         secure
         value={password}
         onChangeText={setPassword}

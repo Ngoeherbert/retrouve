@@ -93,6 +93,7 @@ export default function SignUp() {
     >
       <Field
         label="Full name"
+        placeholder="Your full name"
         value={name}
         onChangeText={setName}
         autoCapitalize="words"
@@ -102,6 +103,7 @@ export default function SignUp() {
       />
       <Field
         label="Email or phone"
+        placeholder="Email or phone number"
         value={identifier}
         onChangeText={setIdentifier}
         keyboardType="email-address"
@@ -111,6 +113,7 @@ export default function SignUp() {
       />
       <Field
         label="Password"
+        placeholder="Create a password"
         secure
         value={password}
         onChangeText={setPassword}

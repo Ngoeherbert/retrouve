@@ -61,10 +61,11 @@ export default function MapViewScreen() {
           <SearchBar value={query} onChangeText={setQuery} onFilter={() => setOpen(true)} />
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel="Go back"
             onPress={() => router.back()}
             style={({ pressed }) => [styles.listBtn, pressed && styles.pressed]}
           >
-            <Icon name="back" size={22} color={brand.white} />
+            <View style={styles.chevron} />
           </Pressable>
         </View>
       </View>
@@ -117,6 +118,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: brand.ink,
+  },
+  chevron: {
+    width: 10,
+    height: 10,
+    marginLeft: 3,
+    borderLeftWidth: 2.5,
+    borderBottomWidth: 2.5,
+    borderColor: brand.white,
+    borderBottomLeftRadius: 1,
+    transform: [{ rotate: "45deg" }],
   },
   pressed: { opacity: 0.9 },
   locate: {

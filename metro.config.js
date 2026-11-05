@@ -18,22 +18,16 @@ nativeWindConfig.resolver.resolveRequest = (context, moduleName, platform) => {
       __dirname,
       "node_modules/react-native-css-interop/dist/runtime/jsx-runtime.js"
     );
-    if (fs.existsSync(filePath)) {
-      return { filePath, type: "sourceFile" };
-    }
+    if (fs.existsSync(filePath)) return { filePath, type: "sourceFile" };
   }
   if (moduleName === "react-native-css-interop/jsx-dev-runtime") {
     const filePath = path.resolve(
       __dirname,
       "node_modules/react-native-css-interop/dist/runtime/jsx-dev-runtime.js"
     );
-    if (fs.existsSync(filePath)) {
-      return { filePath, type: "sourceFile" };
-    }
+    if (fs.existsSync(filePath)) return { filePath, type: "sourceFile" };
   }
-  if (upstreamResolveRequest) {
-    return upstreamResolveRequest(context, moduleName, platform);
-  }
+  if (upstreamResolveRequest) return upstreamResolveRequest(context, moduleName, platform);
   return context.resolveRequest(context, moduleName, platform);
 };
 

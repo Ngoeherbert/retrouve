@@ -2,6 +2,9 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Icon } from '@/components/icon';
+import { Brand as brand } from '@/constants/theme';
+
 interface ScreenPlaceholderProps {
   title: string;
 }
@@ -10,33 +13,33 @@ export function ScreenPlaceholder({ title }: ScreenPlaceholderProps) {
   const router = useRouter();
   const segments = useSegments() as string[];
   const insets = useSafeAreaInsets();
-  
-  // Hide back button on tab roots
-  const isTabRoot = segments[0] === '(tabs)';
-  
-  const showBackButton = !isTabRoot;
 
+  const isTabRoot = segments[0] === '(tabs)';
+  const showBackButton = !isTabRoot;
   const currentPath = '/' + segments.join('/');
 
   return (
-    <View 
-      className="flex-1 items-center justify-center px-4" 
-      style={{ backgroundColor: '#F1F2F7', paddingTop: insets.top, paddingBottom: insets.bottom }}
+    <View
+      className="flex-1 items-center justify-center px-4"
+      style={{ backgroundColor: brand.bg, paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
       {showBackButton && (
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
           onPress={() => router.back()}
-          className="absolute w-10 h-10 rounded-full bg-black items-center justify-center"
-          style={{ top: insets.top + 16, left: 16 }}
+          activeOpacity={0.8}
+          className="absolute left-4 w-11 h-11 rounded-full bg-white items-center justify-center"
+          style={{ top: insets.top + 12 }}
         >
-          <Text className="text-white text-lg">←</Text>
+          <Icon name="back" size={22} color={brand.ink} strokeWidth={2} />
         </TouchableOpacity>
       )}
-      
-      <Text className="text-2xl font-bold mb-2" style={{ color: '#0B0F14' }}>
+
+      <Text className="text-2xl font-bold mb-2" style={{ color: brand.ink }}>
         {title}
       </Text>
-      <Text className="text-sm" style={{ color: '#666' }}>
+      <Text className="text-sm" style={{ color: brand.muted }}>
         {currentPath}
       </Text>
     </View>

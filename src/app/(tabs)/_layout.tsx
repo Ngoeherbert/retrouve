@@ -7,6 +7,7 @@ function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const go = (name: string) => {
     if (navigation?.navigate) return navigation.navigate(name);
+    if (name === 'index') return router.navigate('/(tabs)' as never);
     return router.navigate(`/(tabs)/${name}` as never);
   };
 

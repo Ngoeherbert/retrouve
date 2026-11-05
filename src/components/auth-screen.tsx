@@ -51,7 +51,9 @@ export function AuthScreen({ title, subtitle, children, footer }: Props) {
           accessibilityRole="button"
           accessibilityLabel="Go back"
           onPress={goBack}
-          style={({ pressed }) => [styles.back, pressed && styles.backPressed]}
+          hitSlop={8}
+          className="w-12 h-12 rounded-full bg-white items-center justify-center"
+          style={({ pressed }) => pressed && { opacity: 0.8 }}
         >
           <Icon name="back" size={22} color={brand.ink} strokeWidth={2} />
         </Pressable>
@@ -95,16 +97,6 @@ export function AuthLink({ prompt, action, onPress }: LinkProps) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: brand.bg },
   content: { flexGrow: 1, paddingHorizontal: 20 },
-
-  back: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: brand.white,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backPressed: { opacity: 0.8 },
 
   title: {
     marginTop: 22,
