@@ -11,8 +11,8 @@ type Props = {
 
 export function SearchBar({ value, onChangeText, onFilter }: Props) {
   return (
-    <View style={styles.row}>
-      <View style={styles.field}>
+    <View className="flex-row items-center gap-3">
+      <View className="flex-1 h-[54px] px-[18px] rounded-[27px] flex-row items-center bg-white">
         <Icon name="search" size={20} color={brand.muted} />
         <TextInput
           value={value}
@@ -22,14 +22,16 @@ export function SearchBar({ value, onChangeText, onFilter }: Props) {
           returnKeyType="search"
           autoCorrect={false}
           accessibilityLabel="Search lost and found items"
-          style={styles.input}
+          className="flex-1 h-full ml-3 text-base"
+          style={{ color: brand.ink }}
         />
       </View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Filters"
         onPress={onFilter}
-        style={({ pressed }) => [styles.filter, pressed && styles.pressed]}
+        className="w-[54px] h-[54px] rounded-[27px] items-center justify-center bg-[#0B0F14]"
+        style={({ pressed }) => pressed && { opacity: 0.9 }}
       >
         <Icon name="filter" size={22} color={brand.white} />
       </Pressable>
