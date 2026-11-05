@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
+import { Icon } from "@/components/icon";
 import { Brand as brand } from "@/constants/theme";
 
 type Props = {
@@ -52,7 +53,7 @@ export function AuthScreen({ title, subtitle, children, footer }: Props) {
           onPress={goBack}
           style={({ pressed }) => [styles.back, pressed && styles.backPressed]}
         >
-          <View style={styles.chevron} />
+          <Icon name="back" size={22} color={brand.ink} strokeWidth={2} />
         </Pressable>
 
         <Text accessibilityRole="header" style={styles.title}>
@@ -104,16 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   backPressed: { opacity: 0.8 },
-  chevron: {
-    width: 11,
-    height: 11,
-    marginLeft: 4,
-    borderLeftWidth: 2.4,
-    borderBottomWidth: 2.4,
-    borderColor: brand.ink,
-    borderBottomLeftRadius: 1,
-    transform: [{ rotate: "45deg" }],
-  },
 
   title: {
     marginTop: 22,

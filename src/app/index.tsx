@@ -1,16 +1,10 @@
 import { useEffect, useRef } from "react";
-import {
-  Animated,
-  Easing,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
+import { Button } from "@/components/button";
 import { Brand as colors } from "@/constants/theme";
 
 // Fades and lifts a view in once, after `delay` ms.
@@ -42,30 +36,6 @@ function SearchGlyph() {
       <View style={styles.glyphLens} />
       <View style={styles.glyphHandle} />
     </View>
-  );
-}
-
-function Button({
-  label,
-  onPress,
-  tone,
-}: {
-  label: string;
-  onPress: () => void;
-  tone: "yellow" | "white";
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: tone === "yellow" ? colors.yellow : colors.white },
-        pressed && styles.buttonPressed,
-      ]}
-    >
-      <Text style={styles.buttonLabel}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -152,7 +122,6 @@ export default function Welcome() {
 
       <View style={styles.spacer} />
 
-      {/* Routes arrive with the screen placeholders; `as never` keeps typed routes quiet until then. */}
       <Button
         label="Create account"
         tone="yellow"
@@ -273,18 +242,4 @@ const styles = StyleSheet.create({
   },
 
   spacer: { flex: 1, minHeight: 24 },
-
-  button: {
-    height: 56,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonPressed: { transform: [{ scale: 0.98 }], opacity: 0.92 },
-  buttonLabel: {
-    fontSize: 17,
-    fontWeight: "700",
-    letterSpacing: -0.2,
-    color: colors.ink,
-  },
 });

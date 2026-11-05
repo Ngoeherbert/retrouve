@@ -5,7 +5,11 @@ import { Icon } from '@/components/icon';
 
 function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
-  
+  const go = (name: string) => {
+    if (navigation?.navigate) return navigation.navigate(name);
+    return router.navigate(`/(tabs)/${name}` as never);
+  };
+
   const isFocused = (routeName: string) => {
     const route = state.routes[state.index];
     if (routeName === 'index' && route.name === 'index') return true;
@@ -14,7 +18,7 @@ function CustomTabBar({ state, navigation }: any) {
     if (routeName === 'profile' && route.name === 'profile') return true;
     return false;
   };
-  
+
   return (
     <View 
       style={{ 
@@ -32,7 +36,7 @@ function CustomTabBar({ state, navigation }: any) {
       }}
     >
       <TouchableOpacity
-        onPress={() => navigation.navigate('index')}
+        onPress={() => go('index')}
         style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}
       >
         <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: isFocused('index') ? '#FFD43B' : 'transparent' }}>
@@ -41,7 +45,7 @@ function CustomTabBar({ state, navigation }: any) {
       </TouchableOpacity>
       
       <TouchableOpacity
-        onPress={() => navigation.navigate('search')}
+        onPress={() => go('search')}
         style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}
       >
         <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: isFocused('search') ? '#FFD43B' : 'transparent' }}>
@@ -57,7 +61,7 @@ function CustomTabBar({ state, navigation }: any) {
       </TouchableOpacity>
       
       <TouchableOpacity
-        onPress={() => navigation.navigate('messages')}
+        onPress={() => go('messages')}
         style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}
       >
         <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: isFocused('messages') ? '#FFD43B' : 'transparent' }}>
@@ -66,7 +70,7 @@ function CustomTabBar({ state, navigation }: any) {
       </TouchableOpacity>
       
       <TouchableOpacity
-        onPress={() => navigation.navigate('profile')}
+        onPress={() => go('profile')}
         style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}
       >
         <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: isFocused('profile') ? '#FFD43B' : 'transparent' }}>
