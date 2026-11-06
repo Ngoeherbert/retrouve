@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Keyboard, Pressable, TextInput, View } from "react-native";
 
 import { Brand as brand } from "@/constants/theme";
 import { Icon } from "@/components/icon";
@@ -7,63 +7,66 @@ type Props = {
   value: string;
   onChangeText: (value: string) => void;
   onFilter: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  autoFocus?: boolean;
 };
 
-export function SearchBar({ value, onChangeText, onFilter }: Props) {
+export function SearchBar({
+  value,
+  onChangeText,
+  onFilter,
+  onFocus,
+  onBlur,
+  autoFocus,
+}: Props) {
   return (
-    <View className="flex-row items-center gap-3">
-      <View className="flex-1 h-[54px] px-[18px] rounded-[27px] flex-row items-center bg-white">
-        <Icon name="search" size={20} color={brand.muted} />
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder="Search lost and found items"
-          placeholderTextColor={brand.muted}
-          returnKeyType="search"
-          autoCorrect={false}
-          accessibilityLabel="Search lost and found items"
-          className="flex-1 h-full ml-3 text-base"
-          style={{ color: brand.ink }}
-        />
-      </View>
+    <View className="h-[54px] px-3 rounded-[27px] flex-row items-center bg-white">
+      <Icon name="search" size={20} color={brand.muted} />
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        autoFocus={autoFocus}
+        placeholder="Search lost and found items"
+        placeholderTextColor={brand.muted}
+        returnKeyType="search"
+        autoCorrect={false}
+        accessibilityLabel="Search lost and found items"
+        className="flex-1 mx-2.5 text-base"
+        textAlign="left"
+        textAlignVertical="center"
+        style={{
+          color: brand.ink,
+          paddingVertical: 0,
+          paddingHorizontal: 0,
+          lineHeight: 20,
+          includeFontPadding: false,
+        }}
+      />
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Filters"
-        onPress={onFilter}
-        className="w-[54px] h-[54px] rounded-[27px] items-center justify-center bg-[#0B0F14]"
-        style={({ pressed }) => pressed && { opacity: 0.9 }}
+        accessibilityLabel={value.length > 0 ? "Clear search" : "Filters"}
+        onPress={() => {
+          if (value.length > 0) {
+            onChangeText("");
+            Keyboard.dismiss();
+            return;
+          }
+          onFilter();
+        }}
+        hitSlop={8}
+        className="w-10 h-10 rounded-full items-center justify-center bg-[#0B0F14]"
+        style={({ pressed }) => pressed && { opacity: 0.85 }}
       >
-        <Icon name="filter" size={22} color={brand.white} />
+        <Icon
+          name={value.length > 0 ? "close" : "filter"}
+          size={20}
+          color={brand.white}
+          strokeWidth={2}
+        />
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: { flexDirection: "row", alignItems: "center", gap: 12 },
-  field: {
-    flex: 1,
-    height: 54,
-    paddingHorizontal: 18,
-    borderRadius: 27,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: brand.white,
-  },
-  input: {
-    flex: 1,
-    height: "100%",
-    marginLeft: 12,
-    fontSize: 16,
-    color: brand.ink,
-  },
-  filter: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: brand.ink,
-  },
-  pressed: { opacity: 0.9 },
-});

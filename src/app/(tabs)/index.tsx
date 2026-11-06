@@ -45,14 +45,24 @@ export default function Home() {
           <Text style={styles.greeting}>Good morning</Text>
           <Text style={styles.name}>Amina</Text>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Notifications"
-          onPress={() => router.push("/notifications")}
-          style={({ pressed }) => [styles.bell, pressed && styles.pressed]}
-        >
-          <Ionicons name="notifications-outline" size={22} color={brand.ink} />
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="AI matches (test)"
+            onPress={() => router.push("/report/matches" as never)}
+            style={({ pressed }) => [styles.bell, pressed && styles.pressed]}
+          >
+            <Ionicons name="sparkles-outline" size={22} color={brand.ink} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Notifications"
+            onPress={() => router.push("/notifications")}
+            style={({ pressed }) => [styles.bell, pressed && styles.pressed]}
+          >
+            <Ionicons name="notifications-outline" size={22} color={brand.ink} />
+          </Pressable>
+        </View>
       </View>
 
       {/* Search pill */}
@@ -191,6 +201,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: 10 },
   greeting: { fontSize: 15, color: brand.muted },
   name: { fontSize: 28, fontWeight: "800", color: brand.ink },
   bell: {

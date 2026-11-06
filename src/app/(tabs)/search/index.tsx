@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   FlatList,
+  Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FiltersSheet } from "@/components/filters-sheet";
 import { ItemCard, type Item, type ItemStatus } from "@/components/item-card";
 import { SearchBar } from "@/components/search-bar";
+import NoResultsScreen from "@/app/(tabs)/search/empty";
 import { Brand as brand } from "@/constants/theme";
 
 const TINTS = [
@@ -85,15 +87,6 @@ export default function SearchResults() {
     return matches.filter((item) => item.status === statuses[0]);
   }, [matches, active]);
 
-  // Pad odd counts with a spacer so the last card keeps half-width
-  const gridData = useMemo<(Item | { id: string; spacer: true })[]>(
-    () =>
-      results.length % 2 === 1
-        ? [...results, { id: "spacer", spacer: true }]
-        : results,
-    [results],
-  );
-
   const toggle = (c: ChipKey) => {
     setActive((prev) => {
       if (prev.includes(c)) return prev.filter((x) => x !== c);
@@ -160,8 +153,16 @@ export default function SearchResults() {
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        onScrollBeginDrag={Keyboard.dismiss}
         ListEmptyComponent={
-          <Text style={styles.empty}>No items match your search</Text>
+          <NoResultsScreen
+            embedded
+            query={query}
+            onQueryChange={setQuery}
+            onFilter={() => setOpen(true)}
+            area="Molyko"
+          />
         }
         renderItem={({ item }) => (
           <View style={{ width: cardWidth, flexGrow: 0, flexShrink: 0 }}>

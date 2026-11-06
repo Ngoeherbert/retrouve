@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+/* eslint-disable react-hooks/refs -- refs accessed only in gesture callbacks */
+import { useEffect, useRef, useState } from "react";
 import {
   PanResponder,
   StyleSheet,
@@ -22,25 +23,26 @@ export function RangeSlider({ value, min, max, onChange }: Props) {
   const box = useRef<any>(null);
 
   const latest = useRef({ min, max, onChange, width });
-  latest.current = { min, max, onChange, width };
+  useEffect(() => {
+    latest.current = { min, max, onChange, width };
+  }, [min, max, onChange, width]);
   const left = useRef(0);
 
-  const setFromX = (x: number) => {
-    const { min, max, onChange, width } = latest.current;
-    const travel = width - THUMB;
-    if (travel <= 0) return;
-    const ratio = Math.min(1, Math.max(0, (x - THUMB / 2) / travel));
-    onChange(Math.round(min + ratio * (max - min)));
-  };
-
-  const pan = useRef(
-    PanResponder.create({
+  const [pan] = useState(() => {
+    const setFromX = (x: number) => {
+      const { min: lo, max: hi, onChange: emit, width: w } = latest.current;
+      const travel = w - THUMB;
+      if (travel <= 0) return;
+      const ratio = Math.min(1, Math.max(0, (x - THUMB / 2) / travel));
+      emit(Math.round(lo + ratio * (hi - lo)));
+    };
+    return PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderTerminationRequest: () => false,
       onPanResponderGrant: (e) => {
         const pageX = e.nativeEvent.pageX;
-        if (box.current && typeof box.current.measureInWindow === 'function') {
+        if (box.current && typeof box.current.measureInWindow === "function") {
           box.current.measureInWindow((x: number) => {
             left.current = x;
             setFromX(pageX - x);
@@ -48,8 +50,8 @@ export function RangeSlider({ value, min, max, onChange }: Props) {
         }
       },
       onPanResponderMove: (_, g) => setFromX(g.moveX - left.current),
-    }),
-  ).current;
+    });
+  });
 
   const travel = Math.max(width - THUMB, 0);
   const ratio = (value - min) / (max - min);
