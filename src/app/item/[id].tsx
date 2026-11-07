@@ -256,7 +256,7 @@ export default function ItemDetail() {
             tone="yellow"
             onPress={() =>
               router.push({
-                pathname: "/claim/[id]/prove",
+                pathname: "/claim/[id]",
                 params: { id: item.id },
               })
             }
