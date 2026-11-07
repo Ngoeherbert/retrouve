@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import {
   Pressable,
   ScrollView,
@@ -625,4 +625,460 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
   },
   actionLabel: { fontSize: 16, fontWeight: "800", color: brand.ink },
+});
+
+export function StepList({
+  steps,
+}: {
+  steps: { title: string; sub: string }[];
+}) {
+  return (
+    <View style={stepStyles.card}>
+      {steps.map((step, i) => (
+        <View key={step.title} style={[stepStyles.row, i > 0 && stepStyles.divider]}>
+          <View style={stepStyles.circle}>
+            <Text style={stepStyles.number}>{i + 1}</Text>
+          </View>
+          <View style={stepStyles.body}>
+            <Text style={stepStyles.title}>{step.title}</Text>
+            <Text style={stepStyles.sub}>{step.sub}</Text>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const stepStyles = StyleSheet.create({
+  card: {
+    backgroundColor: brand.white,
+    borderRadius: 28,
+    paddingHorizontal: 18,
+    marginHorizontal: 20,
+    marginTop: 16,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+  },
+  divider: { borderTopWidth: 1, borderTopColor: LINE },
+  circle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: brand.yellow,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  number: { fontSize: 16, fontWeight: "800", color: brand.ink },
+  body: { flex: 1, marginLeft: 14 },
+  title: { fontSize: 17, fontWeight: "800", color: brand.ink },
+  sub: { marginTop: 2, fontSize: 15, color: brand.muted },
+});
+
+export function CheckCircle({ size = 84 }: { size?: number }) {
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: brand.yellow,
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center",
+      }}
+    >
+      <View
+        style={{
+          width: size * 0.17,
+          height: size * 0.33,
+          borderRightWidth: 4,
+          borderBottomWidth: 4,
+          borderColor: brand.ink,
+          borderRadius: 2,
+          marginTop: -size * 0.06,
+          transform: [{ rotate: "45deg" }],
+        }}
+      />
+    </View>
+  );
+}
+
+export function ChatBubble({
+  initials,
+  text,
+}: {
+  initials: string;
+  text: string;
+}) {
+  return (
+    <View style={chatStyles.row}>
+      <Avatar initials={initials} tint={brand.yellow} size={40} />
+      <View style={chatStyles.bubble}>
+        <Text style={chatStyles.text}>{text}</Text>
+      </View>
+    </View>
+  );
+}
+
+const chatStyles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingHorizontal: 20,
+    gap: 10,
+  },
+  bubble: {
+    flex: 1,
+    marginRight: 20,
+    backgroundColor: brand.white,
+    borderRadius: 24,
+    borderTopLeftRadius: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  text: { fontSize: 16, lineHeight: 21, color: brand.ink },
+});
+
+export type TimelineStep = { title: string; sub: string };
+
+export function Timeline({
+  steps,
+  current,
+}: {
+  steps: TimelineStep[];
+  /** index of the active step; earlier steps are done, later ones upcoming */
+  current: number;
+}) {
+  return (
+    <View style={tlStyles.wrap}>
+      {steps.map((step, i) => {
+        const done = i < current;
+        const active = i === current;
+        const last = i === steps.length - 1;
+        return (
+          <View key={step.title} style={tlStyles.row}>
+            <View style={tlStyles.rail}>
+              <View
+                style={[
+                  tlStyles.dot,
+                  done && tlStyles.dotDone,
+                  active && tlStyles.dotActive,
+                ]}
+              >
+                {done ? <View style={tlStyles.tick} /> : null}
+              </View>
+              {!last ? (
+                <View style={[tlStyles.line, done && tlStyles.lineDone]} />
+              ) : null}
+            </View>
+            <View style={[tlStyles.body, last && { paddingBottom: 0 }]}>
+              <Text style={tlStyles.title}>{step.title}</Text>
+              <Text style={tlStyles.sub}>{step.sub}</Text>
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+const tlStyles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20, marginTop: 26 },
+  row: { flexDirection: "row" },
+  rail: { width: 28, alignItems: "center", marginRight: 16 },
+  dot: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#DDE1E9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dotDone: { backgroundColor: brand.ink },
+  dotActive: {
+    backgroundColor: brand.yellow,
+    borderWidth: 3,
+    borderColor: brand.ink,
+  },
+  tick: {
+    width: 6,
+    height: 11,
+    borderRightWidth: 2.5,
+    borderBottomWidth: 2.5,
+    borderColor: brand.yellow,
+    marginTop: -2,
+    transform: [{ rotate: "45deg" }],
+  },
+  line: { flex: 1, width: 2, backgroundColor: LINE, marginVertical: 2 },
+  lineDone: { backgroundColor: brand.ink },
+  body: { flex: 1, paddingBottom: 30, paddingTop: 1 },
+  title: { fontSize: 17, fontWeight: "800", color: brand.ink },
+  sub: { marginTop: 3, fontSize: 15, color: brand.muted },
+});
+
+export function XCircle({ size = 84 }: { size?: number }) {
+  const bar = {
+    position: "absolute" as const,
+    width: size * 0.34,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: brand.muted,
+  };
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: "#E6E8EE",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center",
+      }}
+    >
+      <View style={[bar, { transform: [{ rotate: "45deg" }] }]} />
+      <View style={[bar, { transform: [{ rotate: "-45deg" }] }]} />
+    </View>
+  );
+}
+
+export function TextCard({
+  label,
+  text,
+  tone = "white",
+}: {
+  label: string;
+  text: string;
+  tone?: "white" | "yellow";
+}) {
+  return (
+    <View
+      style={[
+        tcStyles.card,
+        { backgroundColor: tone === "yellow" ? "#FEF0B9" : brand.white },
+      ]}
+    >
+      <Text style={tcStyles.label}>{label}</Text>
+      <Text style={tcStyles.text}>{text}</Text>
+    </View>
+  );
+}
+
+const tcStyles = StyleSheet.create({
+  card: {
+    borderRadius: 28,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    marginHorizontal: 20,
+  },
+  label: { fontSize: 14, color: brand.muted },
+  text: { marginTop: 4, fontSize: 17, fontWeight: "800", color: brand.ink },
+});
+
+export function Banner({ title, sub }: { title: string; sub?: string }) {
+  return (
+    <View style={bnStyles.card}>
+      <View style={bnStyles.tick} />
+      <View style={{ flex: 1 }}>
+        <Text style={bnStyles.title}>{title}</Text>
+        {sub ? <Text style={bnStyles.sub}>{sub}</Text> : null}
+      </View>
+    </View>
+  );
+}
+
+const bnStyles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: brand.yellow,
+    borderRadius: 28,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    marginHorizontal: 20,
+    gap: 18,
+  },
+  tick: {
+    width: 10,
+    height: 18,
+    borderRightWidth: 3.5,
+    borderBottomWidth: 3.5,
+    borderColor: brand.ink,
+    marginLeft: 6,
+    marginTop: -4,
+    transform: [{ rotate: "45deg" }],
+  },
+  title: { fontSize: 20, fontWeight: "800", color: brand.ink },
+  sub: { marginTop: 3, fontSize: 15, color: "#3B3F4A" },
+});
+
+export function HandoverCodeCard({
+  code,
+  hint,
+}: {
+  code: string;
+  hint?: string;
+}) {
+  return (
+    <View style={hcStyles.card}>
+      <Text style={hcStyles.label}>Handover code</Text>
+      <Text
+        style={hcStyles.code}
+        accessibilityLabel={`Handover code ${code.split("").join(" ")}`}
+        adjustsFontSizeToFit
+        numberOfLines={1}
+      >
+        {code}
+      </Text>
+      {hint ? <Text style={hcStyles.hint}>{hint}</Text> : null}
+    </View>
+  );
+}
+
+const hcStyles = StyleSheet.create({
+  card: {
+    backgroundColor: brand.ink,
+    borderRadius: 32,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    marginHorizontal: 20,
+    alignItems: "center",
+  },
+  label: { fontSize: 15, color: "#A9AFBD" },
+  code: {
+    marginTop: 8,
+    fontSize: 48,
+    fontWeight: "800",
+    letterSpacing: 8,
+    color: brand.yellow,
+  },
+  hint: { marginTop: 10, fontSize: 14, color: "#A9AFBD" },
+});
+
+export function StarRating({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (n: number) => void;
+}) {
+  return (
+    <View style={srStyles.row}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Pressable
+          key={n}
+          accessibilityRole="button"
+          accessibilityLabel={`${n} star${n > 1 ? "s" : ""}`}
+          accessibilityState={{ selected: n <= value }}
+          onPress={() => onChange(n)}
+          hitSlop={4}
+          style={srStyles.hit}
+        >
+          <Text
+            style={[srStyles.star, { color: n <= value ? brand.yellow : "#D5D9E2" }]}
+          >
+            ★
+          </Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+const srStyles = StyleSheet.create({
+  row: { flexDirection: "row", justifyContent: "center", gap: 2, marginTop: 24 },
+  hit: { minWidth: 44, minHeight: 48, alignItems: "center", justifyContent: "center" },
+  star: { fontSize: 46, lineHeight: 52 },
+});
+
+export function QACard({
+  items,
+}: {
+  items: { question: string; answer: string }[];
+}) {
+  return (
+    <View style={qaStyles.card}>
+      {items.map((it, i) => (
+        <View key={it.question} style={[qaStyles.item, i > 0 && qaStyles.divider]}>
+          <Text style={qaStyles.q}>{it.question}</Text>
+          <Text style={qaStyles.a}>{it.answer}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const qaStyles = StyleSheet.create({
+  card: {
+    backgroundColor: brand.white,
+    borderRadius: 28,
+    paddingHorizontal: 18,
+    marginHorizontal: 20,
+  },
+  item: { paddingVertical: 15 },
+  divider: { borderTopWidth: 1, borderTopColor: LINE },
+  q: { fontSize: 15, color: brand.muted },
+  a: { marginTop: 4, fontSize: 18, fontWeight: "800", color: brand.ink },
+});
+
+export function CodeBoxes({
+  value,
+  onChange,
+  prefix = "RT-",
+  length = 4,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  prefix?: string;
+  length?: number;
+}) {
+  const ref = useRef<TextInput>(null);
+  const active = Math.min(value.length, length - 1);
+  return (
+    <View style={cbStyles.row}>
+      <Text style={cbStyles.prefix}>{prefix}</Text>
+      {Array.from({ length }).map((_, i) => (
+        <View key={i} style={[cbStyles.box, i === active && cbStyles.boxOn]}>
+          <Text style={cbStyles.digit}>{value[i] ?? ""}</Text>
+        </View>
+      ))}
+      <TextInput
+        ref={ref}
+        autoFocus
+        value={value}
+        onChangeText={(t) => onChange(t.replace(/\D/g, "").slice(0, length))}
+        keyboardType="number-pad"
+        maxLength={length}
+        caretHidden
+        accessibilityLabel="Owner code digits"
+        style={cbStyles.hidden}
+      />
+    </View>
+  );
+}
+
+const cbStyles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 20,
+  },
+  prefix: { fontSize: 22, fontWeight: "800", color: brand.ink },
+  box: {
+    flex: 1,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: brand.white,
+    borderWidth: 2,
+    borderColor: "transparent",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  boxOn: { borderColor: brand.ink },
+  digit: { fontSize: 28, fontWeight: "800", color: brand.ink },
+  hidden: { ...StyleSheet.absoluteFillObject, opacity: 0.02, color: "transparent" },
 });
